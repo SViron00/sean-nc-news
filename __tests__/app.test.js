@@ -23,3 +23,29 @@ describe("GET /api", () => {
       });
   });
 });
+describe("GET /api/topics", () => {
+  test("200: returns array of topic objects with slug and description", () => {
+    return request(app)
+      .get("/api/topics")
+      .expect(200)
+      .then(({ body: { topics } }) => {
+        expect(topics).toHaveLength(3);
+        topics.forEach((topic) => {
+          expect(topic).toMatchObject({
+            slug: expect.any(String),
+            description: expect.any(String),
+          });
+        });
+      });
+  });
+});
+describe("Error handling", () => {
+  test("404: responds with error message when path not found", () => {
+    return request(app)
+      .get("/api/topicz")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Not found");
+      });
+  });
+});
