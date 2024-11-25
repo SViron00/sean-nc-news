@@ -85,7 +85,7 @@ describe("GET /api/articles/:article_id", () => {
   });
 });
 describe("GET /api/articles", () => {
-  test("200: returns array of article objects with required properties", () => {
+  test("200: returns array of article objects with required properties and makes sure comment_count is a number", () => {
     return request(app)
       .get("/api/articles")
       .expect(200)
@@ -103,24 +103,57 @@ describe("GET /api/articles", () => {
             comment_count: expect.any(Number),
           });
         });
-        expect(articles).toBeSortedBy("created_at", { descending: true });
+        expect(articles).toBeSortedBy("created_at", {
+          descending: true,
+          coerce: true,
+        });
       });
   });
-  test("400: responds with error for invalid sort_by query", () => {
+  test("404: responds with not found for invalid path", () => {
     return request(app)
-      .get("/api/articles?sort_by=bananas")
-      .expect(400)
+      .get("/api/articlezzzz")
+      .expect(404)
       .then(({ body }) => {
-        expect(body.msg).toBe("Invalid sort query");
+        expect(body.msg).toBe("Not found");
+      });
+  });
+});
+
+describe("GET /api/articles/:article_id/comments", () => {
+  test("200: returns array of comments for given article_id", () => {
+    return request(app)
+      .get("/api/articles/1/comments")
+      .expect(200)
+      .then(({ body: { comments } }) => {
+        expect(comments).toHaveLength(11);
+        comments.forEach((comment) => {
+          expect(comment).toMatchObject({
+            comment_id: expect.any(Number),
+            votes: expect.any(Number),
+            created_at: expect.any(String),
+            author: expect.any(String),
+            body: expect.any(String),
+            article_id: 1,
+          });
+        });
+        expect(comments).toBeSortedBy("created_at", { descending: true });
+      });
+  });
+  test("404: returns error when article_id does not exist", () => {
+    return request(app)
+      .get("/api/articles/999/comments")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Not found");
       });
   });
 
-  test("400: responds with error for invalid order query", () => {
+  test("400: returns error when article_id is invalid", () => {
     return request(app)
-      .get("/api/articles?order=bananas")
+      .get("/api/articles/banana/comments")
       .expect(400)
       .then(({ body }) => {
-        expect(body.msg).toBe("Invalid sort query");
+        expect(body.msg).toBe("Bad request");
       });
   });
 });
