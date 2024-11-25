@@ -20,6 +20,12 @@ git clone https://github.com/SViron00/sean-nc-news.git
 cd sean-nc-news
 ```
 
+2. OPen in VSCode :
+
+```bash
+code .
+```
+
 ## API Endpoints
 
 ### GET /api/topics
