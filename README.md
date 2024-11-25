@@ -91,3 +91,24 @@ Example response:
   ]
 }
 ```
+
+### GET /api/articles/:article_id/comments
+
+Returns all comments for a specific article sorted by date in descending order.
+
+Example response:
+
+```json
+{
+  "comments": [
+    {
+      "comment_id": 1,
+      "votes": 16,
+      "created_at": "2020-04-06T12:17:00.000Z",
+      "author": "butter_bridge",
+      "body": "The beautiful thing about treasure is discovering it.",
+      "article_id": 1
+    }
+  ]
+}
+```
