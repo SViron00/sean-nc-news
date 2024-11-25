@@ -1,9 +1,21 @@
 # Northcoders News API
 
-For instructions, please head over to [L2C NC News](https://l2c.northcoders.com/courses/be/nc-news).
+## Project Overview
 
+A RESTful API for accessing and managing news articles, comments, and user data.
 
+## Setup Instructions
 
---- 
+### Prerequisites
 
-This portfolio project was created as part of a Digital Skills Bootcamp in Software Engineering provided by [Northcoders](https://northcoders.com/)
+- Node.js
+- PostgreSQL
+
+### Local Development Setup
+
+1. Clone this repository:
+
+```bash
+git clone https://github.com/SViron00/sean-nc-news.git
+cd sean-nc-news
+```
