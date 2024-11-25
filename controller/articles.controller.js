@@ -11,7 +11,6 @@ exports.getArticleById = (req, res, next) => {
 
 exports.getArticles = (req, res, next) => {
   const { sort_by, order } = req.query;
-  console.log(sort_by, order, "<---- params in controllerrr");
   fetchArticles(sort_by, order)
     .then((articles) => {
       res.status(200).send({ articles });

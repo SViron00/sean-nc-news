@@ -40,6 +40,5 @@ exports.fetchArticles = (sort_by = "created_at", order = "desc") => {
     return Promise.reject({ status: 400, msg: "Invalid sort query" });
   }
   sqlQuery += `ORDER BY ${sort_by} ${uppercaseOrder} `;
-  console.log(sqlQuery, "<------ query in model");
   return db.query(sqlQuery).then(({ rows }) => rows);
 };

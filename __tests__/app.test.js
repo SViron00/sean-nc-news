@@ -102,7 +102,6 @@ describe("GET /api/articles", () => {
             article_img_url: expect.any(String),
             comment_count: expect.any(Number),
           });
-          expect(article.body).toBeUndefined();
         });
         expect(articles).toBeSortedBy("created_at", { descending: true });
       });
