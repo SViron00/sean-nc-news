@@ -20,6 +20,12 @@ git clone https://github.com/SViron00/sean-nc-news.git
 cd sean-nc-news
 ```
 
+2. Open in VSCode:
+
+```bash
+code .
+```
+
 ## API Endpoints
 
 ### GET /api/topics
@@ -39,5 +45,26 @@ Example Response:
       "description": "Code is love, code is life"
     }
   ]
+}
+```
+
+### GET /api/articles/:article_id
+
+Retrieves an article by its ID.
+
+Response example:
+
+```json
+{
+  "article": {
+    "article_id": 1,
+    "title": "Living in the shadow of a great man",
+    "topic": "mitch",
+    "author": "butter_bridge",
+    "body": "I find this existence challenging",
+    "created_at": "2020-07-09T20:11:00.000Z",
+    "votes": 100,
+    "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
+  }
 }
 ```
