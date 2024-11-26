@@ -68,3 +68,47 @@ Response example:
   }
 }
 ```
+
+### GET /api/articles
+
+Returns all articles sorted by date in descending order.
+
+Example response:
+
+```json
+{
+  "articles": [
+    {
+      "article_id": 1,
+      "title": "Living in the shadow of a great man",
+      "topic": "mitch",
+      "author": "butter_bridge",
+      "created_at": "2020-07-09T20:11:00.000Z",
+      "votes": 100,
+      "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+      "comment_count": 11
+    }
+  ]
+}
+```
+
+### GET /api/articles/:article_id/comments
+
+Returns all comments for a specific article sorted by date in descending order.
+
+Example response:
+
+```json
+{
+  "comments": [
+    {
+      "comment_id": 1,
+      "votes": 16,
+      "created_at": "2020-04-06T12:17:00.000Z",
+      "author": "butter_bridge",
+      "body": "The beautiful thing about treasure is discovering it.",
+      "article_id": 1
+    }
+  ]
+}
+```
