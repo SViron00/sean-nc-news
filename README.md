@@ -112,3 +112,31 @@ Example response:
   ]
 }
 ```
+
+### POST /api/articles/:article_id/comments
+
+Adds a new comment to an article.
+
+Request:
+
+```json
+{
+  "username": "butter_bridge",
+  "body": "Great article!"
+}
+```
+
+Succesfull response:
+
+```json
+{
+  "comment": {
+    "comment_id": 19,
+    "body": "Great article!",
+    "article_id": 1,
+    "author": "butter_bridge",
+    "votes": 0,
+    "created_at": "2023-11-20T08:25:00.000Z"
+  }
+}
+```
