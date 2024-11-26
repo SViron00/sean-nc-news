@@ -139,6 +139,14 @@ describe("GET /api/articles/:article_id/comments", () => {
         expect(comments).toBeSortedBy("created_at", { descending: true });
       });
   });
+  test("200: responds with an empty array when the article exists but has no comments", () => {
+    return request(app)
+      .get("/api/articles/2/comments")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body).toEqual({ comments: [] });
+      });
+  });
   test("404: returns error when article_id does not exist", () => {
     return request(app)
       .get("/api/articles/999/comments")
@@ -173,7 +181,7 @@ describe("POST /api/articles/:article_id/comments", () => {
           body: "Great article!",
           article_id: 1,
           author: "butter_bridge",
-          votes: expect.any(Number),
+          votes: 0,
           created_at: expect.any(String),
         });
       });
@@ -211,6 +219,72 @@ describe("POST /api/articles/:article_id/comments", () => {
     return request(app)
       .post("/api/articles/1/comments")
       .send(newComment)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad request");
+      });
+  });
+  test("404: user does not exist", () => {
+    const newComment = {
+      username: "not_a_real_user",
+      body: "Great article!",
+    };
+    return request(app)
+      .post("/api/articles/1/comments")
+      .send(newComment)
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Not found");
+      });
+  });
+});
+describe("PATCH /api/articles/:article_id", () => {
+  test("200: updates article votes and returns updated article", () => {
+    const voteUpdate = { inc_votes: 1 };
+    return request(app)
+      .patch("/api/articles/1")
+      .send(voteUpdate)
+      .expect(200)
+      .then(({ body: { article } }) => {
+        expect(article).toMatchObject({
+          article_id: 1,
+          title: expect.any(String),
+          topic: expect.any(String),
+          author: expect.any(String),
+          body: expect.any(String),
+          created_at: expect.any(String),
+          votes: 101,
+          article_img_url: expect.any(String),
+        });
+      });
+  });
+  test("404: article not found", () => {
+    const voteUpdate = { inc_votes: 1 };
+    return request(app)
+      .patch("/api/articles/999")
+      .send(voteUpdate)
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Not found");
+      });
+  });
+
+  test("400: invalid article_id", () => {
+    const voteUpdate = { inc_votes: 1 };
+    return request(app)
+      .patch("/api/articles/banana")
+      .send(voteUpdate)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad request");
+      });
+  });
+
+  test("400: invalid vote value", () => {
+    const voteUpdate = { inc_votes: "banana" };
+    return request(app)
+      .patch("/api/articles/1")
+      .send(voteUpdate)
       .expect(400)
       .then(({ body }) => {
         expect(body.msg).toBe("Bad request");
