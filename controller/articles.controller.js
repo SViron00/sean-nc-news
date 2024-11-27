@@ -17,7 +17,7 @@ exports.getArticleById = (req, res, next) => {
 };
 
 exports.getArticles = (req, res, next) => {
-  const { sort_by, order, topic } = req.query;
+ const { sort_by, order, topic } = req.query;
 
   (topic ? checkExists("topics", "slug", topic) : Promise.resolve())
     .then(() => fetchArticles(sort_by, order, topic))
