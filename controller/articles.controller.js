@@ -6,7 +6,7 @@ const {
 } = require("../model/articles.model");
 const { insertCommentByArticleId } = require("../model/comments.model");
 const { checkExists } = require("../model/check.model");
-const { deletecCommentById } = require("../controller/comments.controller");
+
 exports.getArticleById = (req, res, next) => {
   const { article_id } = req.params;
   fetchArticleById(article_id)
@@ -29,9 +29,6 @@ exports.getCommentsByArticleId = (req, res, next) => {
 
   fetchCommentsByArticleId(article_id)
     .then((comments) => {
-      if (comments.length === 0) {
-        return res.status(200).send({ comments: [] });
-      }
       res.status(200).send({ comments });
     })
     .catch(next);
@@ -55,6 +52,14 @@ exports.postCommentByArticleId = (req, res, next) => {
 exports.patchArticleVotes = (req, res, next) => {
   const { article_id } = req.params;
   const { inc_votes } = req.body;
+
+  if (
+    !inc_votes ||
+    typeof inc_votes !== "number" ||
+    Object.keys(req.body).length !== 1
+  ) {
+    next({ status: 400, msg: "Bad request" });
+  }
 
   checkExists("articles", "article_id", article_id)
     .then(() => updateArticleVotes(article_id, inc_votes))
