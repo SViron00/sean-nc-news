@@ -290,6 +290,26 @@ describe("PATCH /api/articles/:article_id", () => {
         expect(body.msg).toBe("Bad request");
       });
   });
+  test("400: responds with 'Bad request' when sent empty object", () => {
+    const voteUpdate = {};
+    return request(app)
+      .patch("/api/articles/1")
+      .send(voteUpdate)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad request");
+      });
+  });
+  test("400: responds with 'Bad request' when object contains invalid keys", () => {
+    const voteUpdate = { inc_votes: 1, extra_key: "invalid" };
+    return request(app)
+      .patch("/api/articles/1")
+      .send(voteUpdate)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad request");
+      });
+  });
 });
 describe("DELETE /api/comments/:comment_id", () => {
   test("204: successfully deletes a comment by comment_id", () => {
@@ -311,6 +331,38 @@ describe("DELETE /api/comments/:comment_id", () => {
       .expect(400)
       .then(({ body }) => {
         expect(body.msg).toBe("Bad request");
+      });
+  });
+});
+describe("GET /api/users", () => {
+  test("200: returns array of all users with correct properties", () => {
+    return request(app)
+      .get("/api/users")
+      .expect(200)
+      .then(({ body: { users } }) => {
+        expect(users).toHaveLength(4);
+        expect(users[0]).toEqual({
+          username: "butter_bridge",
+          name: "jonny",
+          avatar_url:
+            "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg",
+        });
+        users.forEach((user) => {
+          expect(user).toMatchObject({
+            username: expect.any(String),
+            name: expect.any(String),
+            avatar_url: expect.any(String),
+          });
+        });
+      });
+  });
+
+  test("404: responds with not found for invalid path", () => {
+    return request(app)
+      .get("/api/userss")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Not found");
       });
   });
 });
