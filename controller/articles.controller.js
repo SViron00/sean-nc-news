@@ -6,7 +6,7 @@ const {
 } = require("../model/articles.model");
 const { insertCommentByArticleId } = require("../model/comments.model");
 const { checkExists } = require("../model/check.model");
-
+const { deletecCommentById } = require("../controller/comments.controller");
 exports.getArticleById = (req, res, next) => {
   const { article_id } = req.params;
   fetchArticleById(article_id)
