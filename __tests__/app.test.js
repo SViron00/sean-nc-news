@@ -366,3 +366,40 @@ describe("GET /api/users", () => {
       });
   });
 });
+describe("GET /api/articles (queries)", () => {
+  test("200: accepts sort_by query defaulting to created_at", () => {
+    return request(app)
+      .get("/api/articles?sort_by=votes")
+      .expect(200)
+      .then(({ body: { articles } }) => {
+        expect(articles).toBeSortedBy("votes", { descending: true });
+      });
+  });
+
+  test("200: accepts order query defaulting to desc", () => {
+    return request(app)
+      .get("/api/articles?order=asc")
+      .expect(200)
+      .then(({ body: { articles } }) => {
+        expect(articles).toBeSortedBy("created_at");
+      });
+  });
+
+  test("400: invalid sort_by query", () => {
+    return request(app)
+      .get("/api/articles?sort_by=bananas")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Invalid sort query");
+      });
+  });
+
+  test("400: invalid order query", () => {
+    return request(app)
+      .get("/api/articles?order=bananas")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Invalid sort query");
+      });
+  });
+});

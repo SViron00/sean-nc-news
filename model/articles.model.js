@@ -11,7 +11,27 @@ exports.fetchArticleById = (article_id) => {
     });
 };
 
-exports.fetchArticles = () => {
+exports.fetchArticles = (sort_by = "created_at", order = "desc") => {
+  const validSortByValues = [
+    "article_id",
+    "title",
+    "topic",
+    "author",
+    "created_at",
+    "votes",
+    "comment_count",
+  ];
+
+  const validOrderValues = ["ASC", "DESC"];
+  const uppercaseOrder = order.toUpperCase();
+
+  if (
+    !validSortByValues.includes(sort_by) ||
+    !validOrderValues.includes(uppercaseOrder)
+  ) {
+    return Promise.reject({ status: 400, msg: "Invalid sort query" });
+  }
+
   return db
     .query(
       `
@@ -21,7 +41,7 @@ exports.fetchArticles = () => {
       FROM articles
       LEFT JOIN comments ON articles.article_id = comments.article_id
       GROUP BY articles.article_id
-      ORDER BY articles.created_at DESC
+      ORDER BY ${sort_by} ${uppercaseOrder}
     `
     )
     .then(({ rows }) => rows);
