@@ -11,7 +11,7 @@ exports.fetchArticleById = (article_id) => {
     });
 };
 
-exports.fetchArticles = (sort_by = "created_at", order = "desc") => {
+exports.fetchArticles = (sort_by = "created_at", order = "desc", topic) => {
   const validSortByValues = [
     "article_id",
     "title",
@@ -32,19 +32,24 @@ exports.fetchArticles = (sort_by = "created_at", order = "desc") => {
     return Promise.reject({ status: 400, msg: "Invalid sort query" });
   }
 
-  return db
-    .query(
-      `
-      SELECT articles.article_id, title, topic, articles.author, 
-             articles.created_at, articles.votes, article_img_url, 
-             COUNT(comments.comment_id)::INT AS comment_count
-      FROM articles
-      LEFT JOIN comments ON articles.article_id = comments.article_id
-      GROUP BY articles.article_id
-      ORDER BY ${sort_by} ${uppercaseOrder}
-    `
-    )
-    .then(({ rows }) => rows);
+  let queryValues = [];
+  let queryStr = `
+    SELECT articles.article_id, title, topic, articles.author, 
+           articles.created_at, articles.votes, article_img_url, 
+           COUNT(comments.comment_id)::INT AS comment_count
+    FROM articles
+    LEFT JOIN comments ON articles.article_id = comments.article_id
+  `;
+
+  if (topic) {
+    queryStr += ` WHERE articles.topic = $1`;
+    queryValues.push(topic);
+  }
+
+  queryStr += ` GROUP BY articles.article_id
+                ORDER BY ${sort_by} ${uppercaseOrder}`;
+
+  return db.query(queryStr, queryValues).then(({ rows }) => rows);
 };
 
 exports.fetchCommentsByArticleId = (article_id) => {

@@ -403,3 +403,33 @@ describe("GET /api/articles (queries)", () => {
       });
   });
 });
+describe("GET /api/articles (topic query)", () => {
+  test("200: filters articles by topic query", () => {
+    return request(app)
+      .get("/api/articles?topic=cats")
+      .expect(200)
+      .then(({ body: { articles } }) => {
+        articles.forEach((article) => {
+          expect(article.topic).toBe("cats");
+        });
+      });
+  });
+
+  test("200: returns empty array for valid topic with no articles", () => {
+    return request(app)
+      .get("/api/articles?topic=paper")
+      .expect(200)
+      .then(({ body: { articles } }) => {
+        expect(articles).toEqual([]);
+      });
+  });
+
+  test("404: invalid topic query", () => {
+    return request(app)
+      .get("/api/articles?topic=notATopic")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Not found");
+      });
+  });
+});
