@@ -26,6 +26,29 @@ cd sean-nc-news
 code .
 ```
 
+3. Install dependencies:
+
+```bash
+npm install
+```
+
+4. Set up environment files: Create two .env files in the root directory:
+   .env.test containing: PGDATABASE=nc_news_test
+   .env.development containing: PGDATABASE=nc_news
+
+5. Setup databases:
+
+```bash
+npm run setup-dbs
+npm run seed
+```
+
+6. Run test:
+
+```bash
+npm test
+```
+
 ## API Endpoints
 
 ### GET /api/topics
