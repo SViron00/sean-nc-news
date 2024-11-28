@@ -17,7 +17,7 @@ exports.getArticleById = (req, res, next) => {
 };
 
 exports.getArticles = (req, res, next) => {
- const { sort_by, order, topic } = req.query;
+  const { sort_by, order, topic } = req.query;
 
   (topic ? checkExists("topics", "slug", topic) : Promise.resolve())
     .then(() => fetchArticles(sort_by, order, topic))
@@ -56,16 +56,7 @@ exports.patchArticleVotes = (req, res, next) => {
   const { article_id } = req.params;
   const { inc_votes } = req.body;
 
-  if (
-    !inc_votes ||
-    typeof inc_votes !== "number" ||
-    Object.keys(req.body).length !== 1
-  ) {
-    next({ status: 400, msg: "Bad request" });
-  }
-
-  checkExists("articles", "article_id", article_id)
-    .then(() => updateArticleVotes(article_id, inc_votes))
+  updateArticleVotes(article_id, inc_votes, req.body)
     .then((article) => {
       res.status(200).send({ article });
     })

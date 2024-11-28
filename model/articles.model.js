@@ -2,7 +2,16 @@ const db = require("../db/connection");
 
 exports.fetchArticleById = (article_id) => {
   return db
-    .query(`SELECT * FROM articles WHERE article_id =$1`, [article_id])
+    .query(
+      `SELECT articles.article_id, title, topic, articles.author,
+              articles.body, articles.created_at, articles.votes, 
+              article_img_url, COUNT(comments.comment_id)::INT AS comment_count
+       FROM articles
+       LEFT JOIN comments ON articles.article_id = comments.article_id
+       WHERE articles.article_id = $1
+       GROUP BY articles.article_id`,
+      [article_id]
+    )
     .then(({ rows }) => {
       if (rows.length === 0) {
         return Promise.reject({ status: 404, msg: "Not found" });
@@ -10,7 +19,6 @@ exports.fetchArticleById = (article_id) => {
       return rows[0];
     });
 };
-
 exports.fetchArticles = (sort_by = "created_at", order = "desc", topic) => {
   const validSortByValues = [
     "article_id",
@@ -29,7 +37,7 @@ exports.fetchArticles = (sort_by = "created_at", order = "desc", topic) => {
     !validSortByValues.includes(sort_by) ||
     !validOrderValues.includes(uppercaseOrder)
   ) {
-    return Promise.reject({ status: 400, msg: "Invalid sort query" });
+    return Promise.reject({ status: 400, msg: "Invalid query parameter" });
   }
 
   let queryValues = [];
@@ -72,7 +80,15 @@ exports.fetchCommentsByArticleId = (article_id) => {
     });
 };
 
-exports.updateArticleVotes = (article_id, inc_votes) => {
+exports.updateArticleVotes = (article_id, inc_votes, body) => {
+  if (
+    !inc_votes ||
+    typeof inc_votes !== "number" ||
+    Object.keys(body).length !== 1
+  ) {
+    return Promise.reject({ status: 400, msg: "Bad request" });
+  }
+
   return db
     .query(
       `UPDATE articles
@@ -81,5 +97,10 @@ exports.updateArticleVotes = (article_id, inc_votes) => {
        RETURNING *;`,
       [inc_votes, article_id]
     )
-    .then(({ rows }) => rows[0]);
+    .then(({ rows }) => {
+      if (rows.length === 0) {
+        return Promise.reject({ status: 404, msg: "Not found" });
+      }
+      return rows[0];
+    });
 };

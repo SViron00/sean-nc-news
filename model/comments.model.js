@@ -18,5 +18,10 @@ exports.removeCommentById = (comment_id) => {
     .query(`DELETE FROM comments WHERE comment_id = $1 RETURNING *;`, [
       comment_id,
     ])
-    .then(({ rows }) => rows[0]);
+    .then(({ rows }) => {
+      if (rows.length === 0) {
+        return Promise.reject({ status: 404, msg: "Not found" });
+      }
+      return rows[0];
+    });
 };
